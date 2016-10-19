@@ -1205,10 +1205,14 @@ static int ufshcd_map_sg(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
 						if(!strncmp(cmd->request->part->info->volname, "userdata", sizeof("userdata")) \
 								&& fmp_encrypted \
 								&& (cmd->request->bio->bi_rw & REQ_META))
+#ifdef CONFIG_DM_VERITY
 							dev_err(hba->dev, "FMP doesn't work even if device is encrypted. direction(%d). sector(%ld). \
 												sensitive_data(%d)\n",
-									cmd->sc_data_direction, cmd->request->bio->bi_iter.bi_sector,
-									cmd->request->bio->bi_sensitive_data);
+									cmd->sc_data_direction, cmd->request->bio->bi_iter.bi_sector, cmd->request->bio->bi_sensitive_data);
+#else
+							dev_err(hba->dev, "FMP doesn't work even if device is encrypted. direction(%d). sector(%ld)\n",
+									cmd->sc_data_direction, cmd->request->bio->bi_iter.bi_sector);
+#endif
 					}
 				}
 			} else {
